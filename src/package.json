@@ -1,0 +1,11 @@
+{
+  "name": "Agentic Code Reviewer",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts"
+  },
+  "description": "AI-powered code review tool using LangGraph and GitHub webhooks"
+}
