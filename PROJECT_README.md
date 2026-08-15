@@ -363,6 +363,7 @@ For issues, questions, or suggestions:
 - Open an issue on GitHub
 - Check existing documentation
 - Review the deployment guide
+ - If you find this project useful, please consider giving it a star on GitHub and sharing it with your colleagues or community.
 
 ---
 
