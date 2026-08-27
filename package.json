@@ -1,7 +1,33 @@
 {
   "name": "agentic-code-reviewer",
   "version": "1.0.0",
-  "description": "AI-powered code review tool using LangGraph and GitHub webhooks",
+  "description": "Self-hosted TypeScript GitHub pull request code review bot for security, performance, and architecture analysis",
+  "keywords": [
+    "github-bot",
+    "github-webhook",
+    "pull-request",
+    "code-review",
+    "automated-code-review",
+    "static-analysis",
+    "security-scanner",
+    "devsecops",
+    "typescript",
+    "postgresql",
+    "redis",
+    "developer-tools"
+  ],
+  "homepage": "https://github.com/Srameshgitnow/agentic-code-reviewer#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Srameshgitnow/agentic-code-reviewer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Srameshgitnow/agentic-code-reviewer/issues"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=16"
+  },
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
