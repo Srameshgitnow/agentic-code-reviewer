@@ -1,12 +1,17 @@
 node_modules/
 dist/
 .env
-.env.local
+.env.*
+!.env.example
 CODE_GENERATION_SUMMARY.md
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+*.pem
+*.key
+*.crt
+secrets.*
 
 .DS_Store
 .vscode/

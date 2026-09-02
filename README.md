@@ -172,6 +172,15 @@ Never commit `.env`, GitHub tokens, webhook secrets, or database credentials. Re
 
 MIT. See [LICENSE](LICENSE).
 
+## Public project notes
+
+This repository is prepared for professional public presentation and practical use in a developer workflow.
+
+- Keep local credentials in a private `.env` file only; the repository intentionally ignores them.
+- Do not commit tokens, webhook secrets, or generated credentials.
+- This project is documented as a heuristic-based static analysis tool unless an LLM workflow is explicitly added.
+- For public visibility, use a clear GitHub description, relevant repository topics, and a concise product summary in the repository settings.
+
 ## Support the project
 
 Found this useful? [Star Agentic Code Reviewer](https://github.com/Srameshgitnow/agentic-code-reviewer), open an issue with feedback, or contribute a new analyzer rule. Every star helps other teams discover this open-source GitHub pull request review bot.
