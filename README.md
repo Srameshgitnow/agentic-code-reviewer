@@ -1,6 +1,6 @@
 # Agentic Code Reviewer
 
-> A self-hosted TypeScript GitHub pull request code review bot that analyzes changed code for security vulnerabilities, performance risks, and architecture problems—and posts actionable Markdown feedback directly on the pull request.
+> A self-hosted TypeScript GitHub pull request code review bot that analyzes changed code for security vulnerabilities, performance risks, and architecture problems-and posts actionable Markdown feedback directly on the pull request.
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![GitHub Webhooks](https://img.shields.io/badge/GitHub-Webhooks-181717?logo=github&logoColor=white)](https://docs.github.com/en/webhooks)
