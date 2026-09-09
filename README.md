@@ -7,7 +7,7 @@
 [![Tests](https://img.shields.io/badge/tests-Jest-C21325?logo=jest&logoColor=white)](https://jestjs.io/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-Agentic Code Reviewer is an open-source, self-hosted automated code review tool for GitHub pull requests. It receives GitHub webhook events, fetches the pull request diff, runs fast heuristic static analysis, stores review history in PostgreSQL, and uses Redis/Bull for asynchronous processing.
+Agentic Code Reviewer is an open-source, self-hosted automated code review tool for GitHub pull requests. It listens for webhook events, fetches the pull request diff, analyzes the changed code for likely security, performance, and architecture issues, and then posts actionable review feedback directly on the pull request.
 
 If you are looking for a **GitHub code review bot**, **automated pull request security scanner**, or a lightweight **DevSecOps code quality tool**, this project is designed to be easy to extend and run in your own infrastructure.
 
@@ -73,7 +73,7 @@ For local TypeScript development, use `npm run dev`. PostgreSQL and Redis must b
 
 ## Configuration
 
-Copy `.env.example` to `.env` and set the values for your environment:
+Copy `.env.example` to `.env` and set the values for your environment. The project supports both OpenAI and Claude/Anthropic providers.
 
 ```env
 NODE_ENV=development
@@ -82,6 +82,14 @@ WEBHOOK_PATH=/webhook
 GITHUB_WEBHOOK_SECRET=replace-with-a-random-secret
 GITHUB_TOKEN=ghp_your_token
 GITHUB_APP_ID=12345
+
+# LLM provider selection
+LLM_PROVIDER=claude
+OPENAI_API_KEY=replace-with-your-openai-key
+ANTHROPIC_API_KEY=replace-with-your-anthropic-key
+CLAUDE_API_KEY=replace-with-your-claude-key
+LLM_MODEL=claude-3-5-sonnet-20241022
+
 DB_HOST=localhost
 DB_PORT=5432
 DB_USER=postgres
@@ -91,7 +99,25 @@ REDIS_URL=redis://localhost:6379
 LOG_LEVEL=info
 ```
 
-The `OPENAI_API_KEY` and `LLM_MODEL` settings are reserved for planned LLM-assisted analysis and are not used by the current implementation.
+Use `LLM_PROVIDER=claude` with `ANTHROPIC_API_KEY` or `CLAUDE_API_KEY`, or set `LLM_PROVIDER=openai` with `OPENAI_API_KEY`.
+
+## Demo and screenshot preview
+
+This project includes a browser-based preview for public-facing documentation and README screenshots. The generated demo shows a realistic pull request review summary covering security, performance, and architecture findings.
+
+To generate the preview locally:
+
+```bash
+npm run demo
+```
+
+Then open the preview in the browser from the demo folder and capture it for documentation use.
+
+<p align="center">
+  <img src="demo/agentic-code-reviewer-demo.png" alt="Agentic Code Reviewer demo preview" width="100%" />
+</p>
+
+> This preview gives public visitors a quick, clear understanding of the product and its review output without requiring a live webhook setup.
 
 ## Configure a GitHub webhook
 
