@@ -11,7 +11,13 @@ A self-hosted GitHub PR review bot that catches risky changes before they ship.
 
 > Solution: Agentic Code Reviewer listens for GitHub pull request events, inspects the changed code, and posts actionable review feedback directly on the PR. It helps engineering teams catch common risks earlier without sending source code to a third-party SaaS.
 
-⭐ If you find this useful, please star the repo and share it with other developers. Stars help this project get discovered and make it easier to keep improving.
+⭐ If you find this useful, please:
+
+- ⭐ Star the repo on GitHub
+- 🍴 Fork it
+- 💬 Leave feedback in issues
+
+Stars, forks, and feedback help this project get discovered and make it easier to keep improving.
 
 <p align="center">
   <img src="demo/agentic-code-reviewer-demo.png" alt="Agentic Code Reviewer demo screenshot" width="100%" />
@@ -173,7 +179,11 @@ MIT. See [LICENSE](LICENSE).
 
 ## Support the project
 
-If this project helps you, please give it a star. It helps more developers discover the repo and gives the project momentum for future improvements.
+If this project helps you, please:
 
-⭐ [Star Agentic Code Reviewer](https://github.com/Srameshgitnow/agentic-code-reviewer)
+- ⭐ [Star the repo on GitHub](https://github.com/Srameshgitnow/agentic-code-reviewer)
+- 🍴 Fork it
+- 💬 Leave feedback in issues
+
+It helps more developers discover the repo and gives the project momentum for future improvements.
 
