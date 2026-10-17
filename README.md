@@ -1,93 +1,100 @@
 # Agentic Code Reviewer
 
-> A self-hosted TypeScript GitHub pull request code review bot that analyzes changed code for security vulnerabilities, performance risks, and architecture problems-and posts actionable Markdown feedback directly on the pull request.
+A self-hosted GitHub PR review bot that catches risky changes before they ship.
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![GitHub Webhooks](https://img.shields.io/badge/GitHub-Webhooks-181717?logo=github&logoColor=white)](https://docs.github.com/en/webhooks)
 [![Tests](https://img.shields.io/badge/tests-Jest-C21325?logo=jest&logoColor=white)](https://jestjs.io/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-Agentic Code Reviewer is an open-source, self-hosted automated code review tool for GitHub pull requests. It listens for webhook events, fetches the pull request diff, analyzes the changed code for likely security, performance, and architecture issues, and then posts actionable review feedback directly on the pull request.
+> Problem: most teams review pull requests manually, but security issues, performance regressions, and architecture drift often slip through before merge. That means preventable bugs reach production, and review teams spend too much time on repetitive checks.
 
-If you are looking for a **GitHub code review bot**, **automated pull request security scanner**, or a lightweight **DevSecOps code quality tool**, this project is designed to be easy to extend and run in your own infrastructure.
+> Solution: Agentic Code Reviewer listens for GitHub pull request events, inspects the changed code, and posts actionable review feedback directly on the PR. It helps engineering teams catch common risks earlier without sending source code to a third-party SaaS.
 
-⭐ If this project helps your team, please [star the repository](https://github.com/Srameshgitnow/agentic-code-reviewer) and share it with other developers. Stars help prioritize improvements and make the project easier to discover.
+⭐ If you find this useful, please star the repo and share it with other developers. Stars help this project get discovered and make it easier to keep improving.
 
-## Why use it?
+<p align="center">
+  <img src="demo/agentic-code-reviewer-demo.png" alt="Agentic Code Reviewer demo screenshot" width="100%" />
+</p>
 
-- Review pull requests automatically without sending source code to a third-party SaaS.
-- Catch common security mistakes before they reach production.
-- Surface performance and maintainability risks while changes are still easy to fix.
-- Keep an auditable history of reviews and findings in PostgreSQL.
-- Process webhook requests quickly with a Redis-backed Bull queue.
-- Extend the TypeScript analyzers with project-specific rules.
+## What it does
+
+Agentic Code Reviewer analyzes incoming PR diffs and looks for patterns that commonly lead to:
+
+- hardcoded secrets and insecure configuration
+- SQL injection and unsafe input handling
+- performance issues like expensive loops or repeated database access
+- architecture smells like tight coupling or complex functions
+- maintainability problems before they become technical debt
+
+### Example use case
+
+A developer opens a pull request that adds a new API client. The bot reviews the diff, detects a hardcoded token, warns about repeated DB queries, and leaves a review comment like:
+
+```text
+Possible hardcoded secret detected in src/config.ts
+Suggestion: move the token to an environment variable or a secrets manager.
+```
+
+## Tech stack
+
+- TypeScript
+- Express.js
+- PostgreSQL
+- Redis + Bull
+- GitHub Webhooks
+- Jest
+- LangChain / LLM integration hooks
 
 ## Features
 
-| Analyzer | What it checks |
-| --- | --- |
-| Security | Hardcoded secrets, SQL injection patterns, XSS sinks, unsafe deserialization, and missing input validation |
-| Performance | N+1 database queries, nested query loops, inefficient array lookups, and allocations inside loops |
-| Architecture | Possible circular dependencies, tight coupling, complex functions, repeated logic, and missing async error handling |
-| GitHub integration | HMAC-verified pull request webhooks, diff retrieval, and Markdown comments |
-| Operations | PostgreSQL persistence, Redis/Bull retries, health endpoint, and configurable logging |
+- Pull request webhook validation with GitHub signatures
+- Diff-based static analysis for security, performance, and architecture
+- Review comments posted directly to GitHub pull requests
+- Queue-based processing for background analysis jobs
+- PostgreSQL persistence and health checks
+- Configurable environment-based setup for local or self-hosted deployments
 
 ## How it works
 
-1. GitHub sends an `opened` or `synchronize` pull request webhook.
-2. The server verifies the `X-Hub-Signature-256` signature.
-3. The review is queued so GitHub receives a fast response.
-4. The worker downloads the diff and analyzes added lines.
-5. Findings are saved and posted to the pull request as Markdown feedback.
-
-## Current scope
-
-This project currently uses deterministic pattern matching and heuristics. It does **not** yet use an LLM or LangGraph workflow. Findings are suggestions for review, not proof of a vulnerability; always validate results with your normal security and testing processes.
-
-Only added lines in recognized source files are analyzed. Supported language detection includes TypeScript, JavaScript, Python, Java, C#, Go, Ruby, PHP, SQL, HTML, CSS, JSON, and YAML.
+1. GitHub sends a pull request webhook when a PR is opened or updated.
+2. The server verifies the webhook signature and captures the diff.
+3. The analyzer checks added code for known risky patterns.
+4. Findings are queued and posted back to GitHub as Markdown review comments.
 
 ## Quick start
 
 ### Prerequisites
 
-- Node.js 16 or newer
-- PostgreSQL 12 or newer
-- Redis 6 or newer
-- A GitHub token with permission to read pull requests and write pull request comments
-- A publicly reachable HTTPS URL for GitHub webhooks in production
+- Node.js 18+ recommended
+- PostgreSQL 12+
+- Redis 6+
+- GitHub token with PR read/write access
+- Public HTTPS URL for GitHub webhook delivery in production
 
-### Install and build
+### Install
 
 ```bash
 git clone https://github.com/Srameshgitnow/agentic-code-reviewer.git
 cd agentic-code-reviewer
 npm install
-copy .env.example .env
-npm run build
-npm start
+cp .env.example .env
 ```
 
-On macOS/Linux, replace the `copy` command with `cp .env.example .env`. The server listens on port `3000` by default.
-
-For local TypeScript development, use `npm run dev`. PostgreSQL and Redis must be running before starting the server.
-
-## Configuration
-
-Copy `.env.example` to `.env` and set the values for your environment. The project supports both OpenAI and Claude/Anthropic providers.
+### Configure environment
 
 ```env
 NODE_ENV=development
 PORT=3000
 WEBHOOK_PATH=/webhook
-GITHUB_WEBHOOK_SECRET=replace-with-a-random-secret
-GITHUB_TOKEN=ghp_your_token
-GITHUB_APP_ID=12345
+GITHUB_WEBHOOK_SECRET=your-webhook-secret
+GITHUB_TOKEN=your-github-token
+GITHUB_APP_ID=your-app-id
 
-# LLM provider selection
 LLM_PROVIDER=claude
-OPENAI_API_KEY=replace-with-your-openai-key
-ANTHROPIC_API_KEY=replace-with-your-anthropic-key
-CLAUDE_API_KEY=replace-with-your-claude-key
+OPENAI_API_KEY=your-openai-api-key
+ANTHROPIC_API_KEY=your-anthropic-api-key
+CLAUDE_API_KEY=your-claude-key
 LLM_MODEL=claude-3-5-sonnet-20241022
 
 DB_HOST=localhost
@@ -99,60 +106,28 @@ REDIS_URL=redis://localhost:6379
 LOG_LEVEL=info
 ```
 
-Use `LLM_PROVIDER=claude` with `ANTHROPIC_API_KEY` or `CLAUDE_API_KEY`, or set `LLM_PROVIDER=openai` with `OPENAI_API_KEY`.
+> Keep real credentials in a local `.env` only. Never commit secrets or tokens to the repository.
 
-## Demo and screenshot preview
+### Run locally
 
-This project includes a browser-based preview for public-facing documentation and README screenshots. The generated demo shows a realistic pull request review summary covering security, performance, and architecture findings.
+```bash
+npm run build
+npm run dev
+```
 
-To generate the preview locally:
+The app listens on port `3000` by default.
+
+### Generate the demo preview
 
 ```bash
 npm run demo
 ```
 
-Then open the preview in the browser from the demo folder and capture it for documentation use.
+## Current scope
 
-<p align="center">
-  <img src="demo/agentic-code-reviewer-demo.png" alt="Agentic Code Reviewer demo preview" width="100%" />
-</p>
+This project uses deterministic pattern-based analysis and rule heuristics. Findings are suggested review signals, not proof of a vulnerability, and should still be validated using your normal engineering and security workflows.
 
-> This preview gives public visitors a quick, clear understanding of the product and its review output without requiring a live webhook setup.
-
-## Configure a GitHub webhook
-
-1. Open **Repository settings → Webhooks → Add webhook**.
-2. Set the **Payload URL** to `https://your-domain.example/webhook`.
-3. Choose **application/json** as the content type.
-4. Set the same random value in **Secret** and `GITHUB_WEBHOOK_SECRET`.
-5. Select **Let me select individual events**, enable **Pull requests**, and save.
-
-The health check is available at `GET /health`. The webhook endpoint is configurable with `WEBHOOK_PATH`.
-
-## Example review feedback
-
-```text
-Code Review Results
-
-Critical Issues
-- hardcoded_secret (Line 42 in src/config.ts)
-  Issue: A possible hardcoded API key was detected.
-  Suggestion: Move secrets to environment variables or a secrets manager.
-```
-
-## API endpoints
-
-### `POST /webhook`
-
-Receives verified GitHub pull request events and queues supported reviews.
-
-### `GET /health`
-
-Returns the service status and current timestamp.
-
-### `GET /stats`
-
-Reserved endpoint for queue statistics. Detailed queue metrics are planned.
+Supported language detection includes TypeScript, JavaScript, Python, Java, C#, Go, Ruby, PHP, SQL, HTML, CSS, JSON, and YAML.
 
 ## Project structure
 
@@ -161,52 +136,44 @@ src/
 ├── index.ts                 Express server and webhook orchestration
 ├── github-webhook.ts        Signature verification and event parsing
 ├── github-api.ts            GitHub REST API client
-├── code-analyzer.ts         Unified diff parser and language detection
+├── code-analyzer.ts         Diff parsing and language detection
 ├── security-analyzer.ts     Security heuristics
 ├── performance-analyzer.ts  Performance heuristics
 ├── architecture-analyzer.ts Architecture heuristics
 ├── code-review-agent.ts     Review orchestration and Markdown output
 ├── queue.ts                 Redis/Bull job processing
-└── database.ts              PostgreSQL persistence
+├── database.ts              PostgreSQL persistence
+├── demo.ts                  Demo preview generator
+└── ...
 ```
 
 ## Development
 
 ```bash
-npm test                 # Run the Jest test suite
-npm test -- --coverage   # Generate coverage output
-npm run build            # Compile TypeScript
-npm run lint             # Run ESLint when configured
+npm test
+npm run build
+npm run lint
 ```
-
-Contributions are welcome. Please open an issue for a bug or feature proposal, then submit a focused pull request with tests where practical.
 
 ## Roadmap
 
-- Add a local diff/CLI mode for trying the analyzers without GitHub, PostgreSQL, or Redis.
-- Add Docker Compose for one-command local deployment.
-- Add configurable repository-specific rules and severity thresholds.
-- Improve false-positive reporting and test coverage.
-- Add optional LLM-assisted explanations behind an explicit opt-in.
-- Add GitHub Actions support and richer queue metrics.
+- Add a local CLI mode for reviewing diffs without GitHub or external services
+- Add Docker Compose for one-command local setup
+- Improve analyzer rules and reduce false positives
+- Add richer queue metrics and health reporting
+- Add optional LLM-assisted explanations behind explicit opt-in
 
 ## Security
 
-Never commit `.env`, GitHub tokens, webhook secrets, or database credentials. Report security issues privately through the repository's GitHub security contact rather than posting sensitive details publicly.
+Never commit credentials, GitHub tokens, database passwords, webhook secrets, or `.env` files with real values. Report issues privately through the project's security contact rather than exposing them publicly.
 
 ## License
 
 MIT. See [LICENSE](LICENSE).
 
-## Public project notes
-
-This repository is prepared for professional public presentation and practical use in a developer workflow.
-
-- Keep local credentials in a private `.env` file only; the repository intentionally ignores them.
-- Do not commit tokens, webhook secrets, or generated credentials.
-- This project is documented as a heuristic-based static analysis tool unless an LLM workflow is explicitly added.
-- For public visibility, use a clear GitHub description, relevant repository topics, and a concise product summary in the repository settings.
-
 ## Support the project
 
-Found this useful? [Star Agentic Code Reviewer](https://github.com/Srameshgitnow/agentic-code-reviewer), open an issue with feedback, or contribute a new analyzer rule. Every star helps other teams discover this open-source GitHub pull request review bot.
+If this project helps you, please give it a star. It helps more developers discover the repo and gives the project momentum for future improvements.
+
+⭐ [Star Agentic Code Reviewer](https://github.com/Srameshgitnow/agentic-code-reviewer)
+
